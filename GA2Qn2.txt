@@ -83,3 +83,32 @@ with open('comments','w') as commentfile:
         commentfile.write(display)
 
 print('Grade :=>> ' + str(grade))
+
+
+
+
+--------compile.sh
+
+#!/bin/bash
+
+function compile() {
+    g++ -std=c++11 -I /stanford/ -I /stanford/collections -I /stanford/graphics -I /stanford/io  -I /stanford/private -I /stanford/system -I /stanford/util -L /stanford "$@" -lstanford -ldl -lpthread
+}
+
+if [ $# -lt 1 ];
+then
+        echo "Argument expected!"
+        exit 1
+elif [ $# -gt 1 ];
+then
+        echo "More than one file as input! This may not work correctly!"
+fi
+
+if [ ! -f $1 ];
+then
+        echo "$1 does not exist or I don't have permission for reading it"
+        exit 2
+fi
+
+cp /stanford/spl.jar ~
+compile $1
