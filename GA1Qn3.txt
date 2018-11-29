@@ -1,0 +1,64 @@
+File Name - vpl_evaluate.sh
+
+#!/bin/bash
+
+echo "" > vpl_execution
+grade=`python execute.py`
+
+while read line
+do
+    echo "echo \"Comment :=>> $line\"" >> vpl_execution
+done < comments
+echo "echo \"$grade\"" >> vpl_execution
+
+chmod +x vpl_execution
+
+
+
+
+File Name - execute.py
+
+import os, subprocess, time
+from subprocess import PIPE, Popen
+
+input_values = [20,135,876,1000,1]
+output_values = [110,4556,192282,250500,0]
+reduction = [30,20,15,10,10]
+num_of_test_cases = 5
+
+total_reduction = 0
+correct_count = 0
+msg = ''
+grade =  10
+
+ret = os.system('g++ *.cpp -o prog')
+if (ret > 0):
+    commentfile = open('comments','w')
+    commentfile.write('Compilation Error')
+    commentfile.close()
+    print('Grade :=>> 0')
+    exit(0)
+
+for i in range(num_of_test_cases):
+    ps = Popen('./prog', stdin=PIPE, stdout=PIPE)
+    (out,err) = ps.communicate(str(input_values[i]))
+    if (int(out) == output_values[i]):
+        correct_count = correct_count + 1
+    else:
+        total_reduction = total_reduction + reduction[i]
+        msg = msg + 'Failed case: \n your output: ' + out + '\n correct output: ' + str(output_values[i]) + '\n\n'
+
+grade = grade - (total_reduction/10)
+
+display = '+-----------------------------------+\n'
+display = display + '           ' + str(correct_count) + ' / ' + str(num_of_test_cases) + ' cases passed\n\n' 
+display = display + '+-----------------------------------+\n\n'
+display = display + msg
+
+commentfile = open('comments','w')
+commentfile.write(display)
+commentfile.close()
+
+print('Grade :=>> ' + str(grade))
+
+
